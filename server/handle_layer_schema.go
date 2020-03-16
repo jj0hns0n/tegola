@@ -33,7 +33,8 @@ func (req HandleLayerSchema) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
     fmt.Println(req)
 	// read the map_name value from the request
-	req.mapName = params["map_name"]
+	//req.mapName = params["map_name"]
+    req.mapName = "WebMercatorQuad"
 	req.layerName = params["layer_name"]
 
 	// lookup our Map

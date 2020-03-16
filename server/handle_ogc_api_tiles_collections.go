@@ -30,8 +30,8 @@ type HandleOgcApiTilesCollections struct{}
 
 func (req HandleOgcApiTilesCollections) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	collections := OgcApiTilesCollections{
-        Title: "OGC-API-Tiles",
-        Description: "OGC API Tiles",
+        Title: "OGC-API-Tiles - Collections",
+        Description: "OGC API Tiles - Collections",
 	}
     // parse our query string
     var query = r.URL.Query()
@@ -61,7 +61,19 @@ func (req HandleOgcApiTilesCollections) ServeHTTP(w http.ResponseWriter, r *http
                     Rel:        "tiles",
                     Type:       "application/json",
                 }
+                collectionLink := LinkMap{
+                    Href:       buildCapabilitiesURL(r, []string{"ogc-api-tiles", "collections", m.Layers[i].Name}, debugQuery),
+                    Rel:        "collection",
+                    Type:       "application/json",
+                }
+                queryablesLink := LinkMap{
+                    Href:       buildCapabilitiesURL(r, []string{"ogc-api-tiles", "collections", m.Layers[i].Name, "queryables"}, debugQuery),
+                    Rel:        "queryables",
+                    Title:      "Queryable attributes",
+                }
+                cMap.Links = append(cMap.Links, collectionLink)
                 cMap.Links = append(cMap.Links, tilesLink)
+                cMap.Links = append(cMap.Links, queryablesLink)
 
         		// add the map to the capabilities struct
         		collections.Collections = append(collections.Collections, cMap)

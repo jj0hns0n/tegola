@@ -5,7 +5,7 @@ import (
 	"net/http"
     //"strings"
     "net/url"
-    //"github.com/dimfeld/httptreemux"
+    "github.com/dimfeld/httptreemux"
     //"github.com/go-spatial/tegola/atlas"
     //"fmt"
 )
@@ -26,7 +26,7 @@ type HandleOgcApiTilesTiles struct{
 }
 
 func (req HandleOgcApiTilesTiles) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    //params := httptreemux.ContextParams(r.Context())
+    params := httptreemux.ContextParams(r.Context())
 
     mapTiles := OgcApiTilesTiles{
         Title: "OGC-API-Tiles",
@@ -36,6 +36,8 @@ func (req HandleOgcApiTilesTiles) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	//var query = r.URL.Query()
 
 	debugQuery := url.Values{}
+
+    layerName := params["layer_name"]
 
     wgs84Link := TileMatrixSetLinkMap{
         TileMatrixSet:       "WorldCRS84Quad",
@@ -49,7 +51,7 @@ func (req HandleOgcApiTilesTiles) ServeHTTP(w http.ResponseWriter, r *http.Reque
     mapTiles.TileMatrixSetLinks = append(mapTiles.TileMatrixSetLinks, mercatorLink)
 
     tilesLink := LinkMap{
-        Href:       buildCapabilitiesURL(r, []string{"maps", "{tileMatrixSetId}/{tileMatrix}/{tileCol}/{tileRow}.pbf"}, debugQuery),
+        Href:       buildCapabilitiesURL(r, []string{"maps", "{tileMatrixSetId}", layerName, "{tileMatrix}/{tileCol}/{tileRow}.pbf"}, debugQuery),
         Rel:        "item",
         Type:       "application/vnd.mapbox-vector-tile",
         Title:      "Mapbox vector tiles",
