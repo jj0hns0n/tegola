@@ -22,6 +22,15 @@ type HandleLayerSchema struct {
 	extension string
 }
 
+type Queryable struct {
+    Name string `json:"queryable"`
+    Type string `json:"type"`
+}
+
+type Queryables struct {
+    QueryablesList []Queryable `json:"queryables"`
+}
+
 // returns layer schema
 //
 // URI scheme: /:map_name/:layer_name/queryables
@@ -55,6 +64,16 @@ func (req HandleLayerSchema) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
     queryables, _ := m.Layers[0].Provider.LayerSchema(req.layerName)
 
+    queryables2 := Queryables{}
+
+    for k, v := range queryables {
+        qq := Queryable{}
+        qq.Name = k
+        qq.Type = v
+
+		queryables2.QueryablesList = append(queryables2.QueryablesList, qq)
+    }
+
 	// if we have a debug param add it to our URLs
 	debugQuery := url.Values{}
 	if r.URL.Query().Get("debug") == "true" {
@@ -72,7 +91,10 @@ func (req HandleLayerSchema) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Pragma", "no-cache")
 	w.Header().Add("Expires", "0")
 
-	if err = json.NewEncoder(w).Encode(queryables); err != nil {
+
+    fmt.Printf("%+v\n", queryables2)
+
+	if err = json.NewEncoder(w).Encode(queryables2); err != nil {
 		log.Errorf("error encoding JSON for queryables on map/layer (%v/%v)", req.mapName, req.layerName)
 	}
 }
