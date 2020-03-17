@@ -116,6 +116,8 @@ func (req HandleMapCapabilities) ServeHTTP(w http.ResponseWriter, r *http.Reques
 			continue
 		}
 
+        foo, _ := m.Layers[i].Provider.LayerSchema(m.Layers[i].Name)
+
 		//	build our vector layer details
 		layer := tilejson.VectorLayer{
 			Version: 2,
@@ -127,7 +129,9 @@ func (req HandleMapCapabilities) ServeHTTP(w http.ResponseWriter, r *http.Reques
 			Tiles: []string{
 				buildCapabilitiesURL(r, []string{"maps", req.mapName, m.Layers[i].MVTName(), "{z}/{x}/{y}.pbf"}, debugQuery),
 			},
+            Fields: foo,
 		}
+
 
 		switch m.Layers[i].GeomType.(type) {
 		case geom.Point, geom.MultiPoint:

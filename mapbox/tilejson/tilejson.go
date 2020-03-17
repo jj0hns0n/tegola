@@ -135,4 +135,5 @@ type VectorLayer struct {
 	MaxZoom uint `json:"maxzoom"`
 	// Tegola supports individual layer tiles.
 	Tiles []string `json:"tiles"`
+    Fields map[string]string `json:"fields"`
 }
