@@ -23,7 +23,7 @@ type HandleLayerSchema struct {
 }
 
 type Queryable struct {
-    Name string `json:"queryable"`
+    Name string `json:"id"`
     Type string `json:"type"`
 }
 

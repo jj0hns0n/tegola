@@ -15,10 +15,18 @@ type TileMatrixSetLinkMap struct {
     TileMatrixSetURI string         `json:"tileMatrixSetURI"`
 }
 
+type TilesLinkMap struct {
+	Href string            `json:"href"`
+    Rel string             `json:"rel"`
+	Type string            `json:"type"`
+    Title string           `json:"title"`
+    Templated bool         `json:"templated"`
+}
+
 type OgcApiTilesTiles struct {
     Title string                                `json:"title"`
     Description string                          `json:"description"`
-    Links []LinkMap                             `json:"links"`
+    Links []TilesLinkMap                        `json:"links"`
     TileMatrixSetLinks []TileMatrixSetLinkMap   `json:"tileMatrixSetLinks"`
 }
 
@@ -50,13 +58,23 @@ func (req HandleOgcApiTilesTiles) ServeHTTP(w http.ResponseWriter, r *http.Reque
     mapTiles.TileMatrixSetLinks = append(mapTiles.TileMatrixSetLinks, wgs84Link)
     mapTiles.TileMatrixSetLinks = append(mapTiles.TileMatrixSetLinks, mercatorLink)
 
-    tilesLink := LinkMap{
+    tilesLink := TilesLinkMap{
         Href:       buildCapabilitiesURL(r, []string{"maps", "{tileMatrixSetId}", layerName, "{tileMatrix}/{tileCol}/{tileRow}.pbf"}, debugQuery),
         Rel:        "item",
         Type:       "application/vnd.mapbox-vector-tile",
         Title:      "Mapbox vector tiles",
+        Templated:  true,
     }
     mapTiles.Links = append(mapTiles.Links, tilesLink)
+
+    describedByLink := TilesLinkMap{
+        Href:       buildCapabilitiesURL(r, []string{"ogc-api-tiles", "tiles", "{tileMatrixSetId}", "metadata"}, debugQuery),
+        Rel:        "describedby",
+        Type:       "application/json",
+        Title:      "Tile Set metadata in the tilejson format",
+        Templated:  true,
+    }
+    mapTiles.Links = append(mapTiles.Links, describedByLink)
 
     w.Header().Add("Content-Type", "application/json")
 

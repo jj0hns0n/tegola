@@ -12,13 +12,15 @@ import (
     //"fmt"
 )
 
-type OgcApiTilesCollection struct {
-    Title string                                `json:"title"`
-    Description string                          `json:"description"`
-    Links []LinkMap                             `json:"links"`
-    Extent *geom.Extent                         `json:"extent"`
-    //TileMatrixSetLinks []TileMatrixSetLinkMap   `json:"tileMatrixSetLinks"`
+type SpatialExtentStruct struct {
+    Bbox []*geom.Extent                           `json:"bbox"`
+    Crs string                                  `json:"crs"`
 }
+
+type ExtentStruct struct {
+    SpatialExtent SpatialExtentStruct           `json:"spatial"`
+}
+
 
 type HandleOgcApiTilesCollection struct{
 }
@@ -35,14 +37,21 @@ func (req HandleOgcApiTilesCollection) ServeHTTP(w http.ResponseWriter, r *http.
         return
     }
 
-    collection := OgcApiTilesCollection{
+    extent := ExtentStruct{}
+    spatialExtent := SpatialExtentStruct{}
+    spatialExtent.Bbox = append(spatialExtent.Bbox, m.Bounds)
+    spatialExtent.Crs = "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+    extent.SpatialExtent = spatialExtent
+
+
+    collection := CollectionMap{
+        Id: layerName,
         Title: layerName,
         Description: layerName,
-        Extent:      m.Bounds,
+        Extent: extent,
 	}
     // parse our query string
 	//var query = r.URL.Query()
-
 
 
 	debugQuery := url.Values{}
@@ -61,6 +70,7 @@ func (req HandleOgcApiTilesCollection) ServeHTTP(w http.ResponseWriter, r *http.
     queryablesLink := LinkMap{
         Href:       buildCapabilitiesURL(r, []string{"ogc-api-tiles", "collections", layerName, "queryables"}, debugQuery),
         Rel:        "queryables",
+        Type:       "application/json",
         Title:      "Queryable attributes",
     }
     collection.Links = append(collection.Links, queryablesLink)
@@ -68,6 +78,7 @@ func (req HandleOgcApiTilesCollection) ServeHTTP(w http.ResponseWriter, r *http.
     tilesLink := LinkMap{
         Href:       buildCapabilitiesURL(r, []string{"ogc-api-tiles", "collections", layerName, "tiles"}, debugQuery),
         Rel:        "tiles",
+        Type:       "application/json",
         Title:      "Access the data as vector tiles",
     }
     collection.Links = append(collection.Links, tilesLink)

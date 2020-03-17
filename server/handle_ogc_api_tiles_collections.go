@@ -4,17 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
     "net/url"
-    //"log"
-    "github.com/go-spatial/geom"
+    //"github.com/go-spatial/tegola/internal/log"
+    //"github.com/go-spatial/geom"
     "github.com/go-spatial/tegola/atlas"
 )
-
-type OgcApiTilesCollections struct {
-    Title string                       `json:"title"`
-    Description string                 `json:"description"`
-    Collections []CollectionMap        `json:"collections"`
-    Links []LinkMap                    `json:"links"`
-}
 
 type CollectionMap struct {
 	Id string               `json:"id"`
@@ -22,8 +15,15 @@ type CollectionMap struct {
     Description string      `json:"description"`
     Keywords []string       `json:"keywords"`
     Attribution string      `json:"attribution"`
-    Extent *geom.Extent     `json:"extent"`
     Links []LinkMap         `json:"links"`
+    Extent ExtentStruct     `json:"extent"`
+}
+
+type OgcApiTilesCollections struct {
+    Title string                       `json:"title"`
+    Description string                 `json:"description"`
+    Collections []CollectionMap        `json:"collections"`
+    Links []LinkMap                    `json:"links"`
 }
 
 type HandleOgcApiTilesCollections struct{}
@@ -52,10 +52,18 @@ func (req HandleOgcApiTilesCollections) ServeHTTP(w http.ResponseWriter, r *http
         for i := range m.Layers {
             _, exists := layerNames[m.Layers[i].Name]
             if(!exists) {
+                extent := ExtentStruct{}
+                spatialExtent := SpatialExtentStruct{}
+                spatialExtent.Bbox = append(spatialExtent.Bbox, m.Bounds)
+                spatialExtent.Crs = "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+                extent.SpatialExtent = spatialExtent
+
         		cMap := CollectionMap{
         			Id:        m.Layers[i].Name,
         		    Title:     m.Layers[i].Name,
+                    Extent:    extent,
         		}
+
                 tilesLink := LinkMap{
                     Href:       buildCapabilitiesURL(r, []string{"ogc-api-tiles", "collections", m.Layers[i].Name, "tiles"}, debugQuery),
                     Rel:        "tiles",
