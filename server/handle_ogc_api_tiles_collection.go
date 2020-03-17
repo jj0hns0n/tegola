@@ -6,7 +6,9 @@ import (
     //"strings"
     "net/url"
     "github.com/dimfeld/httptreemux"
-    //"github.com/go-spatial/tegola/atlas"
+    "github.com/go-spatial/tegola/atlas"
+    "github.com/go-spatial/geom"
+    "github.com/go-spatial/tegola/internal/log"
     //"fmt"
 )
 
@@ -14,6 +16,7 @@ type OgcApiTilesCollection struct {
     Title string                                `json:"title"`
     Description string                          `json:"description"`
     Links []LinkMap                             `json:"links"`
+    Extent *geom.Extent                         `json:"extent"`
     //TileMatrixSetLinks []TileMatrixSetLinkMap   `json:"tileMatrixSetLinks"`
 }
 
@@ -24,19 +27,25 @@ func (req HandleOgcApiTilesCollection) ServeHTTP(w http.ResponseWriter, r *http.
     params := httptreemux.ContextParams(r.Context())
 
     layerName := params["layer_name"]
-    //mapName := params[":map_name"]
+    mapName := "WebMercatorQuad"
+    m, err := atlas.GetMap(mapName)
+    if err != nil {
+        log.Errorf("map (%v) not configured. check your config file", mapName)
+        http.Error(w, "map ("+mapName+") not configured. check your config file", http.StatusNotFound)
+        return
+    }
 
-    mapTiles := OgcApiTilesTiles{
+    collection := OgcApiTilesCollection{
         Title: layerName,
         Description: layerName,
+        Extent:      m.Bounds,
 	}
     // parse our query string
 	//var query = r.URL.Query()
 
+
+
 	debugQuery := url.Values{}
-
-
-
 
     //wgs84Link := TileMatrixSetLinkMap{
     //    TileMatrixSet:       "WorldCRS84Quad",
@@ -54,14 +63,14 @@ func (req HandleOgcApiTilesCollection) ServeHTTP(w http.ResponseWriter, r *http.
         Rel:        "queryables",
         Title:      "Queryable attributes",
     }
-    mapTiles.Links = append(mapTiles.Links, queryablesLink)
+    collection.Links = append(collection.Links, queryablesLink)
 
     tilesLink := LinkMap{
         Href:       buildCapabilitiesURL(r, []string{"ogc-api-tiles", "collections", layerName, "tiles"}, debugQuery),
         Rel:        "tiles",
         Title:      "Access the data as vector tiles",
     }
-    mapTiles.Links = append(mapTiles.Links, tilesLink)
+    collection.Links = append(collection.Links, tilesLink)
 
     w.Header().Add("Content-Type", "application/json")
 
@@ -71,5 +80,5 @@ func (req HandleOgcApiTilesCollection) ServeHTTP(w http.ResponseWriter, r *http.
     w.Header().Add("Expires", "0")
 
 	// setup a new json encoder and encode our capabilities
-	json.NewEncoder(w).Encode(mapTiles)
+	json.NewEncoder(w).Encode(collection)
 }
