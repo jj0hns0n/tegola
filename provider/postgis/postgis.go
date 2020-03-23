@@ -564,7 +564,7 @@ func (p Provider) TileFeatures(ctx context.Context, layer string, tile provider.
         if err != nil {
             return fmt.Errorf("error parsing filter: (%v)", err)
         }
-        sql_, err2 := cql.ToSQL(plyr.sql)
+        sql_, err2 := cql.ToSQL(plyr.sql, plyr.srid)
         if err2 != nil {
             return fmt.Errorf("error converting filter to SQL: (%v)", err2)
         }

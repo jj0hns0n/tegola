@@ -23,7 +23,7 @@ func (c *CQLFilter) Parse() error {
     return nil
 }
 
-func (c *CQLFilter) ToSQL(sql_statement string) (string, error) {
+func (c *CQLFilter) ToSQL(sql_statement string, srid uint64) (string, error) {
     var filter_text string
     var value string
 
@@ -33,7 +33,7 @@ func (c *CQLFilter) ToSQL(sql_statement string) (string, error) {
 
     log.Println("Adjusting geometry representation")
 	re2 := regexp.MustCompile(`(?i)(POINT\s?\(.*\d\)|LINESTRING\s?\(.*\d\)|POLYGON\s?\(\(.*\d\)\))`)
- 	filter_text = re2.ReplaceAllString(filter_text, "'$1'::geometry")
+ 	filter_text = fmt.Sprintf(re2.ReplaceAllString(filter_text, "ST_Transform('SRID=4326;$1'::geometry, %d)"), srid)
 
     log.Println("Adjusting temporal predicates")
     re3 := regexp.MustCompile("(?i)BEFORE,ENDS")

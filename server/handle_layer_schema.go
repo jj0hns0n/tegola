@@ -38,9 +38,17 @@ type Queryables struct {
 func (req HandleLayerSchema) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var err error
 
+    qtypes := map[string]string{
+        "int2": "integer",
+        "int8": "integer",
+        "float4": "number",
+        "numeric": "number",
+        "varchar": "string",
+        "bytea": "geometry",
+    }
+
 	params := httptreemux.ContextParams(r.Context())
 
-    fmt.Println(req)
 	// read the map_name value from the request
 	//req.mapName = params["map_name"]
     req.mapName = "WebMercatorQuad"
@@ -62,14 +70,14 @@ func (req HandleLayerSchema) ServeHTTP(w http.ResponseWriter, r *http.Request) {
         }
     }
 
-    queryables, _ := m.Layers[0].Provider.LayerSchema(req.layerName)
+    queryables, _ := m.Layers[0].Provider.LayerSchema(m.Layers[0].ProviderLayerName)
 
     queryables2 := Queryables{}
 
     for k, v := range queryables {
         qq := Queryable{}
         qq.Name = k
-        qq.Type = v
+        qq.Type = qtypes[v]
 
 		queryables2.QueryablesList = append(queryables2.QueryablesList, qq)
     }
