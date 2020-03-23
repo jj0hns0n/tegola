@@ -4,6 +4,7 @@ import (
     "fmt"
     "log"
     "regexp"
+    "strings"
 )
 
 type CQLFilter struct {
@@ -33,7 +34,9 @@ func (c *CQLFilter) ToSQL(sql_statement string, srid uint64) (string, error) {
 
     log.Println("Adjusting geometry representation")
 	re2 := regexp.MustCompile(`(?i)(POINT\s?\(.*\d\)|LINESTRING\s?\(.*\d\)|POLYGON\s?\(\(.*\d\)\))`)
- 	filter_text = fmt.Sprintf(re2.ReplaceAllString(filter_text, "ST_Transform('SRID=4326;$1'::geometry, %d)"), srid)
+ 	//filter_text = fmt.Sprintf(re2.ReplaceAllString(filter_text, "ST_Transform('SRID=4326;$1'::geometry, %d)"), srid)
+    filter_text = re2.ReplaceAllString(filter_text, "ST_Transform('SRID=4326;$1'::geometry, LAYER_SRID)")
+    filter_text = strings.Replace(filter_text, "LAYER_SRID", string(3857), 1)
 
     log.Println("Adjusting temporal predicates")
     re3 := regexp.MustCompile("(?i)BEFORE,ENDS")
