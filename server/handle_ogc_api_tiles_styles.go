@@ -31,7 +31,7 @@ func (req HandleOgcApiTilesStyles) ServeHTTP(w http.ResponseWriter, r *http.Requ
     }
 
     xrayStyleLink := LinkMap{
-        Href:       "http://ogc-vtp.gospatial.org/maps/WebMercatorQuad/style.json",
+        Href:       "https://ogc-vtp.gospatial.org/maps/WebMercatorQuad/style.json",
         Rel:        "stylesheet",
         Type:       "application/vnd.mapbox.style+json",
         Title:      "Xray Style",

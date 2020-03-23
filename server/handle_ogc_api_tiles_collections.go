@@ -71,7 +71,7 @@ func (req HandleOgcApiTilesCollections) ServeHTTP(w http.ResponseWriter, r *http
                 }
                 collectionLink := LinkMap{
                     Href:       buildCapabilitiesURL(r, []string{"ogc-api-tiles", "collections", m.Layers[i].Name}, debugQuery),
-                    Rel:        "collection",
+                    Rel:        "self",
                     Type:       "application/json",
                 }
                 queryablesLink := LinkMap{
