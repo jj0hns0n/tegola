@@ -139,14 +139,14 @@ func (req HandleMapLayerZXY) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// filter down the layers we need for this zoom
 	m = m.FilterLayersByZoom(req.z)
 	if len(m.Layers) == 0 {
-		logAndError(w, http.StatusNotFound, "map (%v) has no layers, at zoom %v", req.mapName, req.z)
+		logAndError(w, http.StatusNoContent, "map (%v) has no layers, at zoom %v", req.mapName, req.z)
 		return
 	}
 
 	if req.layerName != "" {
 		m = m.FilterLayersByName(req.layerName)
 		if len(m.Layers) == 0 {
-			logAndError(w, http.StatusNotFound, "map (%v) has no layers, for LayerName %v at zoom %v", req.mapName, req.layerName, req.z)
+			logAndError(w, http.StatusNoContent, "map (%v) has no layers, for LayerName %v at zoom %v", req.mapName, req.layerName, req.z)
 			return
 		}
 	}
@@ -159,7 +159,7 @@ func (req HandleMapLayerZXY) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// make a new extent
 		textent := tile.Extent4326(uint(m.SRID))
 		if _, intersect := m.Bounds.Intersect(textent); !intersect {
-			logAndError(w, http.StatusNotFound, "map (%v -- %v) does not contains tile at %v/%v/%v -- %v", req.mapName, m.Bounds, req.z, req.x, req.y, textent)
+			logAndError(w, http.StatusNoContent, "map (%v -- %v) does not contains tile at %v/%v/%v -- %v", req.mapName, m.Bounds, req.z, req.x, req.y, textent)
 			return
 		}
 	}
