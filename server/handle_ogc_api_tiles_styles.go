@@ -25,6 +25,22 @@ func (req HandleOgcApiTilesStyles) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	}
 
     //Camo
+    xrayStyleStruct := OgcApiStylesStruct{
+        Title: "Xray",
+        Id:    "xray",
+    }
+
+    xrayStyleLink := LinkMap{
+        Href:       "http://ogc-vtp.gospatial.org/maps/WebMercatorQuad/style.json",
+        Rel:        "stylesheet",
+        Type:       "application/vnd.mapbox.style+json",
+        Title:      "Xray Style",
+    }
+    xrayStyleStruct.Links = append(xrayStyleStruct.Links, xrayStyleLink)
+
+    styles.Styles = append(styles.Styles, xrayStyleStruct)
+
+    //Camo
     camoStyleStruct := OgcApiStylesStruct{
         Title: "Camo",
         Id:    "camo",
@@ -33,7 +49,7 @@ func (req HandleOgcApiTilesStyles) ServeHTTP(w http.ResponseWriter, r *http.Requ
     camoStyleLink := LinkMap{
         Href:       "https://raw.githubusercontent.com/go-spatial/tegola-web-demo/master/styles/camo3d.json",
         Rel:        "stylesheet",
-        Type:       "application/json",
+        Type:       "application/vnd.mapbox.style+json",
         Title:      "Camo Style",
     }
     camoStyleStruct.Links = append(camoStyleStruct.Links, camoStyleLink)
@@ -49,7 +65,7 @@ func (req HandleOgcApiTilesStyles) ServeHTTP(w http.ResponseWriter, r *http.Requ
     goSpatialStyleLink := LinkMap{
         Href:       "https://raw.githubusercontent.com/go-spatial/tegola-web-demo/master/styles/go-spatial.json",
         Rel:        "stylesheet",
-        Type:       "application/json",
+        Type:       "application/vnd.mapbox.style+json",
         Title:      "Go Spatial Style",
     }
     goSpatialStyleStruct.Links = append(goSpatialStyleStruct.Links, goSpatialStyleLink)
@@ -65,7 +81,7 @@ func (req HandleOgcApiTilesStyles) ServeHTTP(w http.ResponseWriter, r *http.Requ
     hotOSMStyleLink := LinkMap{
         Href:       "https://raw.githubusercontent.com/go-spatial/tegola-web-demo/master/styles/hot-osm3d.json",
         Rel:        "stylesheet",
-        Type:       "application/json",
+        Type:       "application/vnd.mapbox.style+json",
         Title:      "HOT OSM Style",
     }
     hotOSMStyleStruct.Links = append(hotOSMStyleStruct.Links, hotOSMStyleLink)
@@ -81,7 +97,7 @@ func (req HandleOgcApiTilesStyles) ServeHTTP(w http.ResponseWriter, r *http.Requ
     mobilityStyleLink := LinkMap{
         Href:       "https://raw.githubusercontent.com/go-spatial/tegola-web-demo/master/styles/mobility3d.json",
         Rel:        "stylesheet",
-        Type:       "application/json",
+        Type:       "application/vnd.mapbox.style+json",
         Title:      "Mobility Style",
     }
     mobilityStyleStruct.Links = append(mobilityStyleStruct.Links, mobilityStyleLink)
@@ -97,7 +113,7 @@ func (req HandleOgcApiTilesStyles) ServeHTTP(w http.ResponseWriter, r *http.Requ
     nightStyleLink := LinkMap{
         Href:       "https://raw.githubusercontent.com/go-spatial/tegola-web-demo/master/styles/night-vision3d.json",
         Rel:        "stylesheet",
-        Type:       "application/json",
+        Type:       "application/vnd.mapbox.style+json",
         Title:      "Night Style",
     }
     nightStyleStruct.Links = append(nightStyleStruct.Links, nightStyleLink)
@@ -113,7 +129,7 @@ func (req HandleOgcApiTilesStyles) ServeHTTP(w http.ResponseWriter, r *http.Requ
     osgeoStyleLink := LinkMap{
         Href:       "https://raw.githubusercontent.com/go-spatial/tegola-web-demo/master/styles/osgeo3d.json",
         Rel:        "stylesheet",
-        Type:       "application/json",
+        Type:       "application/vnd.mapbox.style+json",
         Title:      "OSGeo Style",
     }
     osgeoStyleStruct.Links = append(osgeoStyleStruct.Links, osgeoStyleLink)
@@ -125,7 +141,7 @@ func (req HandleOgcApiTilesStyles) ServeHTTP(w http.ResponseWriter, r *http.Requ
     selfLink := LinkMap{
         Href:       buildCapabilitiesURL(r, []string{"ogc-api-tiles", "styles"}, debugQuery),
         Rel:        "self",
-        Type:       "application/json",
+        Type:       "application/vnd.mapbox.style+json",
         Title:      "This Document",
     }
     styles.Links = append(styles.Links, selfLink)
